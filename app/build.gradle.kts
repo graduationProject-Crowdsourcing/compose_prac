@@ -56,4 +56,27 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+
+    // Okhttp
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+
+    // ViewPager
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pager.indicators)
+
+    // Coroutine
+    implementation(libs.kotlinx.coroutines.core)
+
+    // Coil
+    implementation(libs.coil.compose)
+
+    // ViewModel
+    implementation(platform(libs.compose.bom))
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.lifecycle.viewmodel.ktx)
 }
