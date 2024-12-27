@@ -3,6 +3,7 @@ package com.example.compose_study.ui.Search
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
@@ -32,6 +34,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +46,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.Switch
+import androidx.compose.material3.Button
+import androidx.compose.material3.TextField
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 
@@ -55,9 +63,13 @@ fun SearchListScreen(viewModel: MainViewModel) {
 
     val uiState by viewModel.uiState
 
-    CustomViewPager(tabs, pagerState, coroutineScope, uiState)
+    Column(modifier = Modifier.fillMaxSize()) {
+        SearchRow(viewModel)
 
-    viewModel.onSearch("kotlin")
+        Box(modifier = Modifier.fillMaxWidth().height(2.dp).background(Color.Black))
+
+        CustomViewPager(tabs, pagerState, coroutineScope, uiState)
+        }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -96,8 +108,6 @@ fun CustomViewPager(
             }
         }
     }
-
-
 }
 
 
@@ -187,6 +197,52 @@ fun SearchList(
         }
     }
 }
+
+
+@Composable
+fun SearchRow(viewModel:MainViewModel){
+    var searchQuery by remember { mutableStateOf("") }
+
+    Row(
+        modifier = Modifier.padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        BasicTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            modifier = Modifier
+                .weight(1f)
+                .height(56.dp)
+                .padding(8.dp)
+                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            decorationBox = { innerTextField ->
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.CenterStart // 텍스트가 중앙 정렬되도록 설정
+                ) {
+                    if (searchQuery.isEmpty()) {
+                        Text(
+                            text = "검색어를 입력하세요",
+                            color = Color.Gray,
+                            style = MaterialTheme.typography.body1
+                        )
+                    }
+                    innerTextField() // 실제 입력 필드
+                }
+            }
+        )
+
+        Spacer(modifier = Modifier.width(8.dp)) // TextField와 Button 사이의 간격 추가
+
+        Button(
+            onClick = { viewModel.onSearch(searchQuery) },
+            modifier = Modifier.height(56.dp)
+        ) {
+            Text("검색")
+        }
+    }
+ }
 
 
 @Preview
