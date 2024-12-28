@@ -18,11 +18,44 @@ fun SearchApp(){
             })
         }
 
-        // 챌린저 상위 10명 화면
         composable("searchresult") {
-            SearchResultScreen(searchViewModel = viewModel, onBackClick = {
+            SearchResultScreen(
+                searchViewModel = viewModel,
+                onBackClick = {
                 navController.popBackStack()
-            })
+                },
+                navigateToImageDetail = {
+                    navController.currentBackStackEntry?.savedStateHandle?.set("imgitem", it)
+                    navController.navigate("imagedetailscreen")
+                },
+                navigateToVideoDetail = {
+                    navController.currentBackStackEntry?.savedStateHandle?.set("vitem", it)
+                    navController.navigate("videodetailscreen")
+                })
         }
+
+        composable("imagedetailscreen") {
+            val imageItem = navController.previousBackStackEntry?.savedStateHandle?.
+            get<SearchItem.ImageItem>("imgitem") ?: SearchItem.ImageItem("", "", "", "", "", "", 0,0)
+            ImageDetailScreen(
+                item = imageItem,
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable("videodetailscreen") {
+            val videoItem = navController.previousBackStackEntry?.savedStateHandle?.
+            get<SearchItem.VideoItem>("vitem") ?: SearchItem.VideoItem("", "", "", "", "", 0)
+            VideoDetailScreen(
+                item = videoItem,
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+
     }
 }

@@ -1,5 +1,6 @@
 package com.example.searchapp
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -35,7 +36,9 @@ import coil.compose.AsyncImage
 @Composable
 fun SearchResultScreen(
     searchViewModel: SearchViewModel,
-    onBackClick : () -> Unit
+    onBackClick : () -> Unit,
+    navigateToImageDetail : (SearchItem) -> Unit,
+    navigateToVideoDetail : (SearchItem) -> Unit
 ){
     Scaffold(
         topBar = {
@@ -51,13 +54,20 @@ fun SearchResultScreen(
         paddingValues ->
         SearchResultList(
             searchList = searchViewModel.searchResults,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues),
+            navigateToImageDetail,
+            navigateToVideoDetail
         )
     }
 }
 
 @Composable
-fun SearchResultList(searchList: LiveData<List<SearchItem>>, modifier: Modifier){
+fun SearchResultList(
+    searchList: LiveData<List<SearchItem>>,
+    modifier: Modifier,
+    navigateToImageDetail : (SearchItem) -> Unit,
+    navigateToVideoDetail : (SearchItem) -> Unit
+){
     val searchItems by searchList.observeAsState(initial = emptyList())
 
     LazyColumn(
@@ -68,19 +78,22 @@ fun SearchResultList(searchList: LiveData<List<SearchItem>>, modifier: Modifier)
         items(searchItems){
             item ->
             when (item) {
-                is SearchItem.ImageItem -> ImageResultItem(item = item)
-                is SearchItem.VideoItem -> VideoResultItem(item = item)
+                is SearchItem.ImageItem -> ImageResultItem(item = item, navigateToImageDetail)
+                is SearchItem.VideoItem -> VideoResultItem(item = item, navigateToVideoDetail)
             }
         }
     }
 }
 
 @Composable
-fun ImageResultItem(item : SearchItem.ImageItem){
+fun ImageResultItem(
+    item : SearchItem.ImageItem,
+    navigateToImageDetail : (SearchItem.ImageItem) -> Unit){
     Row (
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable { navigateToImageDetail(item) },
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ){
@@ -103,11 +116,14 @@ fun ImageResultItem(item : SearchItem.ImageItem){
 }
 
 @Composable
-fun VideoResultItem(item : SearchItem.VideoItem){
+fun VideoResultItem(
+    item : SearchItem.VideoItem,
+    navigateToVideoDetail : (SearchItem.VideoItem) -> Unit){
     Row (
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable { navigateToVideoDetail(item) },
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ){

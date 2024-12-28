@@ -1,5 +1,7 @@
 package com.example.searchapp
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import com.google.gson.annotations.SerializedName
 import java.time.OffsetDateTime
 
@@ -47,7 +49,8 @@ data class Meta(
 //)
 
 
-sealed class SearchItem {
+sealed class SearchItem : Parcelable {
+    @Parcelize
     data class ImageItem(
         val thumbnail_url: String,
         val datetime: String,
@@ -59,6 +62,7 @@ sealed class SearchItem {
         val height: Int
     ) : SearchItem()
 
+    @Parcelize
     data class VideoItem(
         val thumbnail: String,
         val datetime: String,
