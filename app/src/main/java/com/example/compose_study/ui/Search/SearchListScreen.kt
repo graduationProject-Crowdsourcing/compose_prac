@@ -52,10 +52,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.compose_study.local.BookmarkEntity
+import com.example.compose_study.ui.util.convertDateToString
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SearchListScreen(viewModel: MainViewModel) {
+fun SearchListScreen(
+    viewModel: MainViewModel
+) {
     val coroutineScope = rememberCoroutineScope()
 
     val tabs = listOf("Search", "Bookmark")
@@ -63,12 +68,24 @@ fun SearchListScreen(viewModel: MainViewModel) {
 
     val uiState by viewModel.uiState
 
+    uiState.nickName?.let {
+        viewModel.getBookmark(it)
+    }
     Column(modifier = Modifier.fillMaxSize()) {
         SearchRow(viewModel)
 
-        Box(modifier = Modifier.fillMaxWidth().height(2.dp).background(Color.Black))
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(2.dp)
+            .background(Color.Black))
 
-        CustomViewPager(tabs, pagerState, coroutineScope, uiState)
+        CustomViewPager(
+            tabs = tabs,
+            pagerState = pagerState,
+            coroutineScope = coroutineScope,
+            uiState = uiState,
+            viewModel = viewModel
+        )
         }
 }
 
@@ -78,7 +95,8 @@ fun CustomViewPager(
     tabs: List<String>,
     pagerState: PagerState,
     coroutineScope: CoroutineScope,
-    uiState: MainViewModel.UiState
+    uiState: MainViewModel.UiState,
+    viewModel: MainViewModel
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(
@@ -102,9 +120,9 @@ fun CustomViewPager(
             modifier = Modifier.fillMaxSize()
         ) { page ->
             if (page == 0) {
-                SearchList(uiState.searchList)
+                SearchList(uiState.searchList, viewModel)
             } else if (page == 1) {
-                SearchList(uiState.bookmarkList)
+                SearchList(uiState.bookmarkList, viewModel)
             }
         }
     }
@@ -113,11 +131,11 @@ fun CustomViewPager(
 
 @Composable
 fun SearchList(
-    searchList: List<SearchListItem>
+    searchList: List<SearchListItem>,
+    viewModel: MainViewModel
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(searchList) { item ->
-
             var checked by remember { mutableStateOf(item.bookmarked) }
             Row(
                 modifier = Modifier
@@ -178,12 +196,52 @@ fun SearchList(
                         )
                     }
 
+                    is SearchListItem.BookmarkItem -> {
+                        Image(
+                            painter = rememberAsyncImagePainter(item.thumbnail),
+                            contentDescription = "Thumbnail",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .padding(16.dp)
+                                .aspectRatio(1f)
+                                .clip(
+                                    RoundedCornerShape(16.dp)
+                                )
+                        )
+
+                        Text(
+                            text = "video\n" + item.title.toString(),
+                            modifier = Modifier
+                                .padding(start = 16.dp)
+                                .weight(1f)  // 텍스트가 Switch와 겹치지 않도록
+                                .wrapContentHeight(),
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis,
+                            fontSize = 12.sp
+                        )
+                    }
                 }
 
                 Switch(
                     checked = checked,
-                    onCheckedChange = {
-                        checked = it
+                    onCheckedChange = { newCheckedState->
+                        viewModel.uiState.value.nickName?.let { nickName ->
+                                checked = newCheckedState
+
+                                val bookmark = BookmarkEntity(
+                                    id = item.id,
+                                    title = item.title ?: "",
+                                    thumbnail = item.thumbnail ?: "",
+                                    date = convertDateToString(item.date),
+                                    nickname = nickName
+                                )
+
+                                if (newCheckedState) {
+                                    viewModel.insertBookmark(bookmark)
+                                } else {
+                                    viewModel.deleteBookmark(bookmark)
+                                }
+                        }
                     }
                 )
             }

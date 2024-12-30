@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("kotlin-kapt")
 }
 
 val localProperties = Properties().apply {
@@ -14,6 +15,7 @@ val localProperties = Properties().apply {
 }
 
 val kakaoSearchKey = localProperties.getProperty("KAKAO_SEARCH_KEY")
+val kakaoApiKey = localProperties.getProperty("KAKAO_NATIVE_APP_KEY")
 
 android {
     namespace = "com.example.compose_study"
@@ -28,7 +30,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "KAKAO_SEARCH_KEY", "\"$kakaoSearchKey\"")
+        buildConfigField("String", "KAKAO_SEARCH_KEY", kakaoSearchKey)
+        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", kakaoApiKey)
     }
 
     buildTypes {
@@ -63,6 +66,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -93,4 +97,12 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.lifecycle.viewmodel.ktx)
+
+    // KaKao Login
+    implementation(libs.kakao.sdk.user)
+
+    // Room Database
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt("androidx.room:room-compiler:2.6.1")
 }

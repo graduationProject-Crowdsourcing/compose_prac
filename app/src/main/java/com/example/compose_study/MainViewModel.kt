@@ -5,9 +5,19 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.compose_study.local.BookmarkDao
+import com.example.compose_study.local.BookmarkDatabase
+import com.example.compose_study.local.BookmarkEntity
+import com.example.compose_study.local.DatabaseProvider
 import com.example.compose_study.network.RetrofitClient
 import com.example.compose_study.ui.Search.SearchListItem
+import com.example.compose_study.ui.util.convertStringToDate
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
 class MainViewModel: ViewModel(){
@@ -15,6 +25,8 @@ class MainViewModel: ViewModel(){
     val uiState: State<UiState> = _uiState
 
     private val searchService = RetrofitClient.searchService
+
+    private val bookmarkDao: BookmarkDao = DatabaseProvider.getDatabase(GlobalApplication.context).bookmarkDao()
 
     fun onSearch(query:String) = viewModelScope.launch{
         runCatching {
@@ -60,10 +72,50 @@ class MainViewModel: ViewModel(){
         }
     }
 
+    fun setNickName(nickName: String){
+        _uiState.value = _uiState.value.copy(
+            nickName = nickName
+        )
+    }
+
+    fun insertBookmark(bookmarkEntity: BookmarkEntity) = viewModelScope.launch{
+        try {
+            bookmarkDao.insertBookmark(bookmarkEntity)
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
+    }
+
+    fun deleteBookmark(bookmarkEntity: BookmarkEntity) = viewModelScope.launch {
+        try {
+            bookmarkDao.deleteBookmark(bookmarkEntity)
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
+    }
+
+    fun getBookmark(nickName: String) = viewModelScope.launch{
+        bookmarkDao.getBookmarksByNickname(nickName).collect { bookmarkList ->
+            _uiState.value = _uiState.value.copy(
+                bookmarkList = bookmarkList.map {
+                    SearchListItem.BookmarkItem(
+                        id = it.id,
+                        title = it.title,
+                        bookmarked = true,
+                        date = convertStringToDate(it.date),
+                        thumbnail = it.thumbnail
+                    )
+                }
+            )
+        }
+    }
+
+
 
     data class UiState(
         val searchList: List<SearchListItem> = emptyList(),
         val bookmarkList: List<SearchListItem> = emptyList(),
-        val isLoading: Boolean = false
+        val isLoading: Boolean = false,
+        val nickName: String? = null
     )
 }
