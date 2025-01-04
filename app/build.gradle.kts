@@ -1,8 +1,20 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id ("kotlin-parcelize")
 }
+
+// apikeys.properties 파일 읽기
+val apikeysPropertiesFile = rootProject.file("apikeys.properties")
+val apikeysProperties = Properties()
+
+if (apikeysPropertiesFile.exists()) {
+    apikeysProperties.load(FileInputStream(apikeysPropertiesFile))
+}
+
 
 android {
     namespace = "com.example.searchapp"
@@ -19,6 +31,19 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildFeatures {
+            buildConfig = true
+            compose = true
+        }
+
+        // BuildConfig에 API 키 추가
+        buildConfigField(
+            "String",
+            "KAKAO_API_KEY",
+            "\"${apikeysProperties.getProperty("KAKAO_API_KEY") ?: ""}\""
+        )
+
     }
 
     buildTypes {
@@ -49,6 +74,8 @@ android {
         }
     }
     buildToolsVersion = "35.0.0"
+
+
 }
 
 dependencies {
@@ -57,6 +84,11 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.recyclerview:recyclerview:1.3.0")
+
+    // Okhttp
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+
 
     //compose
     implementation("androidx.compose.ui:ui:1.5.0")
@@ -73,6 +105,8 @@ dependencies {
 
     // Coil
     implementation ("io.coil-kt:coil-compose:2.2.2")
+
+    implementation("com.kakao.sdk:v2-user:2.12.1")
 
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")

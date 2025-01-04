@@ -1,7 +1,8 @@
-package com.example.searchapp
+package com.example.searchapp.ui.Search
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,9 +13,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,15 +32,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import coil.compose.AsyncImage
+import com.example.searchapp.data.SearchViewModel
+import com.example.searchapp.data.SearchItem
+import com.example.searchapp.data.UiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchResultScreen(
     searchViewModel: SearchViewModel,
     onBackClick : () -> Unit,
-    navigateToImageDetail : (SearchItem) -> Unit,
-    navigateToVideoDetail : (SearchItem) -> Unit
+    onItemClick : (SearchItem) -> Unit
 ){
+    val uiState by searchViewModel.searchResults.observeAsState(UiState())
+
     Scaffold(
         topBar = {
             TopAppBar(title = { Text(text = "검색 결과")},
@@ -52,53 +57,50 @@ fun SearchResultScreen(
         }
     ) {
         paddingValues ->
-        SearchResultList(
-            searchList = searchViewModel.searchResults,
-            modifier = Modifier.padding(paddingValues),
-            navigateToImageDetail,
-            navigateToVideoDetail
-        )
-    }
-}
 
-@Composable
-fun SearchResultList(
-    searchList: LiveData<List<SearchItem>>,
-    modifier: Modifier,
-    navigateToImageDetail : (SearchItem) -> Unit,
-    navigateToVideoDetail : (SearchItem) -> Unit
-){
-    val searchItems by searchList.observeAsState(initial = emptyList())
-
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ){
-        items(searchItems){
-            item ->
-            when (item) {
-                is SearchItem.ImageItem -> ImageResultItem(item = item, navigateToImageDetail)
-                is SearchItem.VideoItem -> VideoResultItem(item = item, navigateToVideoDetail)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (uiState.isLoading){
+                CircularProgressIndicator()
+            } else{
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ){
+                    items(uiState.searchItem){
+                            item ->
+                        when (item) {
+                            is SearchItem.ImageItem -> ImageResultItem(item = item, onItemClick)
+                            is SearchItem.VideoItem -> VideoResultItem(item = item, onItemClick)
+                        }
+                    }
+                }
             }
         }
     }
 }
 
+
+
 @Composable
 fun ImageResultItem(
     item : SearchItem.ImageItem,
-    navigateToImageDetail : (SearchItem.ImageItem) -> Unit){
+    onItemClick: (SearchItem) -> Unit){
     Row (
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
-            .clickable { navigateToImageDetail(item) },
+            .clickable { onItemClick(item) },
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ){
         AsyncImage(
-            model = item.thumbnail_url,
+            model = item.thumbnail,
             contentDescription = "thumbnail",
             modifier = Modifier
                 .size(80.dp)
@@ -110,7 +112,7 @@ fun ImageResultItem(
 
         // 제목 텍스트
         Text(
-            text = item.display_sitename
+            text = item.title ?: "제목 없음"
         )
     }
 }
@@ -118,12 +120,12 @@ fun ImageResultItem(
 @Composable
 fun VideoResultItem(
     item : SearchItem.VideoItem,
-    navigateToVideoDetail : (SearchItem.VideoItem) -> Unit){
+    onItemClick: (SearchItem) -> Unit){
     Row (
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
-            .clickable { navigateToVideoDetail(item) },
+            .clickable { onItemClick(item) },
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ){
@@ -140,7 +142,7 @@ fun VideoResultItem(
 
         // 제목 텍스트
         Text(
-            text = item.title
+            text = item.title ?: "제목 없음"
         )
     }
 }
