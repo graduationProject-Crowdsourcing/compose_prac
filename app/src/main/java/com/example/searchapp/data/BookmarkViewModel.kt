@@ -18,13 +18,12 @@ class BookmarkViewModel(application: Application) : AndroidViewModel(application
 
     // view model 내부에서 data(bookmark list)를 저장하고 수정하는 객체, LiveData를 통해 선언했는데 mutableStateOf해도 같음
     private val _bookmarks = MutableLiveData<List<BookmarkEntity>>()
-    val bookmarks : LiveData<List<BookmarkEntity>> get() = _bookmarks
+    val bookmarks : LiveData<List<BookmarkEntity>> = _bookmarks.also { loadBookmarks() }
 
     // 현재 로그인 된 사용자 ID 관리
     var currentUserId : String? = null
 
     // Room db 작업은 coroutine을 통해 viewModelScope에서 비동기 실행
-
     fun loadBookmarks(){
         try {
             currentUserId?.let {

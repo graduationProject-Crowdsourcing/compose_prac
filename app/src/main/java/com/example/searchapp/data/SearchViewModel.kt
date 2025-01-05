@@ -43,7 +43,7 @@ class SearchViewModel(
                     imageResponse.body()?.documents?.forEach { document ->
                         try {
                             val imageItem = SearchItem.ImageItem(
-                                id = UUID.randomUUID().toString(),
+                                id = document.doc_url,
                                 title = document.display_sitename,
                                 thumbnail = document.thumbnail_url,
                                 date = document.datetime
@@ -66,7 +66,7 @@ class SearchViewModel(
                     videoResponse.body()?.documents?.forEach { document ->
                         try {
                             val videoItem = SearchItem.VideoItem(
-                                id = UUID.randomUUID().toString(),
+                                id = document.url,
                                 title = document.title,
                                 thumbnail = document.thumbnail,
                                 date = document.datetime
@@ -80,6 +80,8 @@ class SearchViewModel(
                 } else {
                     Log.w("SearchViewModel", "동영상 검색 실패: ${videoResponse.code()} - ${videoResponse.message()}")
                 }
+
+                syncBookmarks(allResults)
 
                 // 결과 업데이트
                 _searchResults.value = _searchResults.value?.copy(
@@ -142,7 +144,27 @@ class SearchViewModel(
             }
         }
     }
+
+
+    private fun syncBookmarks(results: MutableList<SearchItem>) {
+        viewModelScope.launch {
+            val bookmarkedIds = bookmarkViewModel.bookmarks.value?.map { it.id } ?: emptyList()
+            results.replaceAll { result ->
+                if (bookmarkedIds.contains(result.id)) {
+                    when (result) {
+                        is SearchItem.ImageItem -> result.copy(bookmarked = true)
+                        is SearchItem.VideoItem -> result.copy(bookmarked = true)
+                    }
+                } else {
+                    result
+                }
+            }
+            _searchResults.value = _searchResults.value?.copy(searchItem = results)
+        }
+    }
 }
+
+
 
 data class UiState(
     val searchItem: List<SearchItem> = emptyList(),
