@@ -93,6 +93,30 @@ class SearchViewModel : ViewModel() {
             }
         }
     }
+
+    fun toggleBookmark(item: SearchItem) {
+        viewModelScope.launch {
+            val updatedItem = when (item) {
+                is SearchItem.ImageItem -> item.copy(bookmarked = !item.bookmarked)
+                is SearchItem.VideoItem -> item.copy(bookmarked = !item.bookmarked)
+            }
+
+            val updatedList = _searchResults.value?.searchItem?.map {
+                if (it.id == updatedItem.id) updatedItem else it
+            } ?: emptyList()
+
+            val updatedBookmarks = if (updatedItem.bookmarked) {
+                _searchResults.value?.bookmarkList?.plus(updatedItem) ?: listOf(updatedItem)
+            } else {
+                _searchResults.value?.bookmarkList?.filter { it.id != updatedItem.id } ?: emptyList()
+            }
+
+            _searchResults.value = _searchResults.value?.copy(
+                searchItem = updatedList,
+                bookmarkList = updatedBookmarks
+            )
+        }
+    }
 }
 
 data class UiState(

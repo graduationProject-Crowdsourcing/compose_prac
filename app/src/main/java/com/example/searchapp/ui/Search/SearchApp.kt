@@ -32,17 +32,14 @@ fun SearchApp(){
         }
 
         composable("searchresult") {
-            SearchResultScreen(
-                searchViewModel = viewModel,
-                onBackClick = {
-                    navController.popBackStack()
-                },
+            SearchPager(
+                viewModel = viewModel,
+                onBackClick = { navController.popBackStack() },
                 onItemClick = {
                     item ->
                     navController.currentBackStackEntry?.savedStateHandle?.set("item", item)
                     navController.navigate("itemdetail")
-                }
-                )
+                })
         }
         
         composable("itemdetail"){
@@ -57,29 +54,5 @@ fun SearchApp(){
                 Text(text = "item not found")
             }
         }
-
-//        composable("imagedetailscreen") {
-//            val imageItem = navController.previousBackStackEntry?.savedStateHandle?.
-//            get<SearchItem.ImageItem>("imgitem") ?: SearchItem.ImageItem("", "", "", "", "", "", 0,0)
-//            ImageDetailScreen(
-//                item = imageItem,
-//                onBackClick = {
-//                    navController.popBackStack()
-//                }
-//            )
-//        }
-//
-//        composable("videodetailscreen") {
-//            val videoItem = navController.previousBackStackEntry?.savedStateHandle?.
-//            get<SearchItem.VideoItem>("vitem") ?: SearchItem.VideoItem("", "", "", "", "", 0)
-//            VideoDetailScreen(
-//                item = videoItem,
-//                onBackClick = {
-//                    navController.popBackStack()
-//                }
-//            )
-//        }
-
-
     }
 }

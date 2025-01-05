@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -41,44 +43,23 @@ import com.example.searchapp.data.UiState
 fun SearchResultScreen(
     searchViewModel: SearchViewModel,
     onBackClick : () -> Unit,
-    onItemClick : (SearchItem) -> Unit
+    onItemClick : (SearchItem) -> Unit,
+    onToggleBookmark: (SearchItem) -> Unit
 ){
     val uiState by searchViewModel.searchResults.observeAsState(UiState())
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text(text = "검색 결과")},
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
-                    }
-                }
-                )
-        }
-    ) {
-        paddingValues ->
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            if (uiState.isLoading){
-                CircularProgressIndicator()
-            } else{
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ){
-                    items(uiState.searchItem){
-                            item ->
-                        when (item) {
-                            is SearchItem.ImageItem -> ImageResultItem(item = item, onItemClick)
-                            is SearchItem.VideoItem -> VideoResultItem(item = item, onItemClick)
-                        }
-                    }
+    if (uiState.isLoading){
+        CircularProgressIndicator()
+    } else{
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ){
+            items(uiState.searchItem){
+                    item ->
+                when (item) {
+                    is SearchItem.ImageItem -> ImageResultItem(item = item, onItemClick, onToggleBookmark)
+                    is SearchItem.VideoItem -> VideoResultItem(item = item, onItemClick, onToggleBookmark)
                 }
             }
         }
@@ -90,7 +71,8 @@ fun SearchResultScreen(
 @Composable
 fun ImageResultItem(
     item : SearchItem.ImageItem,
-    onItemClick: (SearchItem) -> Unit){
+    onItemClick: (SearchItem) -> Unit,
+    onToggleBookmark: (SearchItem) -> Unit){
     Row (
         modifier = Modifier
             .fillMaxSize()
@@ -112,15 +94,27 @@ fun ImageResultItem(
 
         // 제목 텍스트
         Text(
-            text = item.title ?: "제목 없음"
+            text = item.title ?: "제목 없음",
+            modifier = Modifier.weight(1f)
+
         )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        IconButton(onClick = {onToggleBookmark(item)}) {
+            Icon(
+                imageVector = if (item.bookmarked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                contentDescription = "bookmark_toggle"
+            )
+        }
     }
 }
 
 @Composable
 fun VideoResultItem(
     item : SearchItem.VideoItem,
-    onItemClick: (SearchItem) -> Unit){
+    onItemClick: (SearchItem) -> Unit,
+    onToggleBookmark: (SearchItem) -> Unit){
     Row (
         modifier = Modifier
             .fillMaxSize()
@@ -142,8 +136,20 @@ fun VideoResultItem(
 
         // 제목 텍스트
         Text(
-            text = item.title ?: "제목 없음"
+            text = item.title ?: "제목 없음",
+            modifier = Modifier.weight(1f)
         )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        IconButton(
+            onClick = {onToggleBookmark(item)},
+            modifier = Modifier.padding(start = 8.dp)) {
+            Icon(
+                imageVector = if (item.bookmarked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                contentDescription = "bookmark_toggle"
+            )
+        }
     }
 }
 

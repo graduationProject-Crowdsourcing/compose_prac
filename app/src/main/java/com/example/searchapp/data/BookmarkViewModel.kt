@@ -1,0 +1,59 @@
+package com.example.searchapp.data
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.example.searchapp.bookmark.BookmarkEntity
+import com.example.searchapp.bookmark.DatabaseProvider
+import kotlinx.coroutines.launch
+
+// Room db 초기화를 위해 application의 context를 사용
+class BookmarkViewModel(application: Application) : AndroidViewModel(application) {
+
+    // 단일 인스턴스 선언한 DatabaseProvider에서 db 인스턴스를 가져옴 => 이 db에서 DAO를 통해 DB와 상호작용
+    private val db = DatabaseProvider.getDatabase(application)
+    private val bookmarkDao = db.bookmarkDao()
+
+    // view model 내부에서 data(bookmark list)를 저장하고 수정하는 객체, LiveData를 통해 선언했는데 mutableStateOf해도 같음
+    private val _bookmarks = MutableLiveData<List<BookmarkEntity>>()
+    val bookmarks : LiveData<List<BookmarkEntity>> get() = _bookmarks
+
+    // Room db 작업은 coroutine을 통해 viewModelScope에서 비동기 실행
+
+    fun loadBookmarks(){
+        try {
+            viewModelScope.launch {
+                _bookmarks.value = bookmarkDao.getAllBookmark()
+            }
+        }
+        catch (e:Exception){
+            e.printStackTrace()
+        }
+    }
+    fun addBookmark(bookmark: BookmarkEntity) {
+        viewModelScope.launch {
+            try {
+                bookmarkDao.insertBookmark(bookmark)
+                loadBookmarks()  // 업데이트 작업 적용
+            }
+            catch (e:Exception){
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun removeBookmark(bookmark: BookmarkEntity) {
+        viewModelScope.launch {
+            try {
+                bookmarkDao.deleteBookmark(bookmark)
+                loadBookmarks()  // 업데이트 작업 적용
+            }
+            catch (e:Exception){
+                e.printStackTrace()
+            }
+        }
+    }
+
+}
