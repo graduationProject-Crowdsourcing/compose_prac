@@ -20,12 +20,18 @@ class BookmarkViewModel(application: Application) : AndroidViewModel(application
     private val _bookmarks = MutableLiveData<List<BookmarkEntity>>()
     val bookmarks : LiveData<List<BookmarkEntity>> get() = _bookmarks
 
+    // 현재 로그인 된 사용자 ID 관리
+    var currentUserId : String? = null
+
     // Room db 작업은 coroutine을 통해 viewModelScope에서 비동기 실행
 
     fun loadBookmarks(){
         try {
-            viewModelScope.launch {
-                _bookmarks.value = bookmarkDao.getAllBookmark()
+            currentUserId?.let {
+                userId ->
+                viewModelScope.launch {
+                    _bookmarks.value = bookmarkDao.getBookmarkByUser(userId)
+                }
             }
         }
         catch (e:Exception){
@@ -35,8 +41,12 @@ class BookmarkViewModel(application: Application) : AndroidViewModel(application
     fun addBookmark(bookmark: BookmarkEntity) {
         viewModelScope.launch {
             try {
-                bookmarkDao.insertBookmark(bookmark)
-                loadBookmarks()  // 업데이트 작업 적용
+                currentUserId?.let { userId ->
+                    viewModelScope.launch {
+                        bookmarkDao.insertBookmark(bookmark.copy(userId = userId))
+                        loadBookmarks()  // 업데이트 작업 적용
+                    }
+                }
             }
             catch (e:Exception){
                 e.printStackTrace()
@@ -47,11 +57,42 @@ class BookmarkViewModel(application: Application) : AndroidViewModel(application
     fun removeBookmark(bookmark: BookmarkEntity) {
         viewModelScope.launch {
             try {
-                bookmarkDao.deleteBookmark(bookmark)
-                loadBookmarks()  // 업데이트 작업 적용
+                currentUserId?.let { userId ->
+                    viewModelScope.launch {
+                        bookmarkDao.deleteBookmark(bookmark.copy(userId = userId))
+                        loadBookmarks()  // 업데이트 작업 적용
+                    }
+                }
             }
             catch (e:Exception){
                 e.printStackTrace()
+            }
+        }
+    }
+
+    fun toggleBookmark(item: SearchItem) {
+        currentUserId?.let { userId ->
+            viewModelScope.launch {
+                val bookmarkEntity = BookmarkEntity(
+                    id = item.id,
+                    title = item.title,
+                    thumbnail = when (item) {
+                        is SearchItem.ImageItem -> item.thumbnail
+                        is SearchItem.VideoItem -> item.thumbnail
+                    },
+                    date = item.date,
+                    isBookmarked = !item.bookmarked,
+                    userId = userId
+                )
+
+                if (item.bookmarked) {
+                    bookmarkDao.deleteBookmark(bookmarkEntity)
+                } else {
+                    bookmarkDao.insertBookmark(bookmarkEntity)
+                }
+
+                // 북마크 데이터를 다시 로드하여 UI에 반영
+                loadBookmarks()
             }
         }
     }

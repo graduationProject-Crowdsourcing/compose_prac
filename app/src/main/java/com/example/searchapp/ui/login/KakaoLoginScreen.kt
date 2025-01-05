@@ -12,10 +12,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.searchapp.data.BookmarkViewModel
 import com.example.searchapp.ui.login.KakaoLogin
 
 @Composable
 fun LoginScreen(
+    bookmarkViewModel: BookmarkViewModel,
     navigateToSearch : () -> Unit
 ){
     val context = LocalContext.current
@@ -32,8 +34,10 @@ fun LoginScreen(
         Button(onClick = {
             KakaoLogin(
                 context = context,
-                onSuccess = { message ->
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                onSuccess = {  userId ->
+                    bookmarkViewModel.currentUserId = userId // 사용자 ID 설정
+                    bookmarkViewModel.loadBookmarks() // 사용자 북마크 로드
+                    Toast.makeText(context, "로그인 성공: $userId", Toast.LENGTH_SHORT).show()
                     navigateToSearch()
                 },
                 onFailure = { error ->

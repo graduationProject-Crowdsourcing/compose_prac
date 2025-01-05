@@ -9,5 +9,6 @@ data class BookmarkEntity(
     val title : String?,
     val thumbnail : String?,
     val date : String?,
-    val isBookmarked : Boolean = true
+    val isBookmarked : Boolean = true,
+    val userId : String
 )

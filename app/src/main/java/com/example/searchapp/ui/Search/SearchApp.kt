@@ -6,19 +6,25 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.searchapp.data.BookmarkViewModel
 import com.example.searchapp.ui.login.LoginScreen
 import com.example.searchapp.data.SearchViewModel
 import com.example.searchapp.data.SearchItem
+import com.example.searchapp.data.SearchViewModelFactory
 
 
 @Composable
 fun SearchApp(){
-    val viewModel : SearchViewModel = viewModel()
+    val bookmarkViewModel: BookmarkViewModel = viewModel()
+    val viewModel: SearchViewModel = viewModel(
+        factory = SearchViewModelFactory(bookmarkViewModel)
+    )
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "login"){
         composable("login") {
             LoginScreen(
+                bookmarkViewModel = bookmarkViewModel,
                 navigateToSearch = {
                     navController.navigate("search")
                 }
@@ -33,6 +39,7 @@ fun SearchApp(){
 
         composable("searchresult") {
             SearchPager(
+                bookmarkViewModel = bookmarkViewModel,
                 viewModel = viewModel,
                 onBackClick = { navController.popBackStack() },
                 onItemClick = {

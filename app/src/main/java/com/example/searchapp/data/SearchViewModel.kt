@@ -5,12 +5,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.searchapp.bookmark.BookmarkEntity
 import com.example.searchapp.network.RetrofitClient
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 
-class SearchViewModel : ViewModel() {
+class SearchViewModel(
+    private val bookmarkViewModel: BookmarkViewModel //의존성 추가
+) : ViewModel() {
 
     private val _searchResults = MutableLiveData<UiState>()
     val searchResults: LiveData<UiState> get() = _searchResults
@@ -105,16 +108,38 @@ class SearchViewModel : ViewModel() {
                 if (it.id == updatedItem.id) updatedItem else it
             } ?: emptyList()
 
-            val updatedBookmarks = if (updatedItem.bookmarked) {
-                _searchResults.value?.bookmarkList?.plus(updatedItem) ?: listOf(updatedItem)
-            } else {
-                _searchResults.value?.bookmarkList?.filter { it.id != updatedItem.id } ?: emptyList()
-            }
-
             _searchResults.value = _searchResults.value?.copy(
-                searchItem = updatedList,
-                bookmarkList = updatedBookmarks
+                searchItem = updatedList
             )
+
+            // BookmarkViewModel을 통해 북마크 상태 관리
+            if (updatedItem.bookmarked) {
+                bookmarkViewModel.addBookmark(
+                    BookmarkEntity(
+                        id = updatedItem.id,
+                        title = updatedItem.title,
+                        thumbnail = when (updatedItem) {
+                            is SearchItem.ImageItem -> updatedItem.thumbnail
+                            is SearchItem.VideoItem -> updatedItem.thumbnail
+                        },
+                        date = updatedItem.date,
+                        userId = bookmarkViewModel.currentUserId.orEmpty()
+                    )
+                )
+            } else {
+                bookmarkViewModel.removeBookmark(
+                    BookmarkEntity(
+                        id = updatedItem.id,
+                        title = updatedItem.title,
+                        thumbnail = when (updatedItem) {
+                            is SearchItem.ImageItem -> updatedItem.thumbnail
+                            is SearchItem.VideoItem -> updatedItem.thumbnail
+                        },
+                        date = updatedItem.date,
+                        userId = bookmarkViewModel.currentUserId.orEmpty()
+                    )
+                )
+            }
         }
     }
 }

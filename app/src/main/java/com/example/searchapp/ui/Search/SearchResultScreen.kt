@@ -34,6 +34,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import coil.compose.AsyncImage
+import com.example.searchapp.data.BookmarkViewModel
 import com.example.searchapp.data.SearchViewModel
 import com.example.searchapp.data.SearchItem
 import com.example.searchapp.data.UiState
@@ -42,6 +43,7 @@ import com.example.searchapp.data.UiState
 @Composable
 fun SearchResultScreen(
     searchViewModel: SearchViewModel,
+    bookmarkViewModel: BookmarkViewModel,
     onBackClick : () -> Unit,
     onItemClick : (SearchItem) -> Unit,
     onToggleBookmark: (SearchItem) -> Unit

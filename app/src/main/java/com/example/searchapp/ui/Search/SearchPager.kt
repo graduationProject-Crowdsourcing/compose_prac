@@ -27,6 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.searchapp.data.BookmarkViewModel
 import com.example.searchapp.data.SearchItem
 import com.example.searchapp.data.SearchViewModel
 import kotlinx.coroutines.launch
@@ -35,6 +36,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SearchPager(
     viewModel : SearchViewModel,
+    bookmarkViewModel: BookmarkViewModel,
     onBackClick : () -> Unit,
     onItemClick : (SearchItem) -> Unit
     ){
@@ -94,6 +96,7 @@ fun SearchPager(
                     when (page) {
                         0 -> SearchResultScreen(
                             searchViewModel = viewModel,
+                            bookmarkViewModel =bookmarkViewModel,
                             onBackClick = onBackClick,
                             onItemClick = onItemClick,
                             onToggleBookmark = { item ->
@@ -102,7 +105,7 @@ fun SearchPager(
                         )
 
                         1 -> BookmarkScreen(
-                            viewModel = viewModel,
+                            viewModel = bookmarkViewModel,
                             onBackClick = onBackClick
                         )
                     }

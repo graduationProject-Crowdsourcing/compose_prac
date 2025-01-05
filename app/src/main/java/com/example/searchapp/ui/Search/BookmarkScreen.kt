@@ -22,6 +22,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.searchapp.bookmark.BookmarkEntity
+import com.example.searchapp.data.BookmarkViewModel
 import com.example.searchapp.data.SearchItem
 import com.example.searchapp.data.SearchViewModel
 import com.example.searchapp.data.UiState
@@ -29,12 +31,12 @@ import com.example.searchapp.data.UiState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookmarkScreen(
-    viewModel: SearchViewModel,
+    viewModel: BookmarkViewModel,
     onBackClick : () -> Unit
 ){
-    val uiState by viewModel.searchResults.observeAsState(UiState())
+    val bookmarks by viewModel.bookmarks.observeAsState(emptyList())
 
-    if (uiState.bookmarkList.isEmpty()){
+    if (bookmarks.isEmpty()){
         Text(
             text = "북마크 항목이 없음",
             modifier = Modifier
@@ -45,9 +47,9 @@ fun BookmarkScreen(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(8.dp)
         ){
-            items(uiState.bookmarkList) {
-                    item ->
-                BookmarkItem(item = item)
+            items(bookmarks) {
+                    bookmark ->
+                BookmarkItem(bookmark = bookmark)
             }
         }
     }
@@ -55,7 +57,7 @@ fun BookmarkScreen(
 
 @Composable
 fun BookmarkItem(
-    item: SearchItem
+    bookmark: BookmarkEntity
 ){
     Row(
         modifier = Modifier
@@ -64,7 +66,7 @@ fun BookmarkItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = item.title ?: "제목없음",
+            text = bookmark.title ?: "제목없음",
             modifier = Modifier.weight(1f))
     }
 }
