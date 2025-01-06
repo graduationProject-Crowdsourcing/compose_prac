@@ -144,8 +144,6 @@ fun SearchList(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                when (item) {
-                    is SearchListItem.ImageItem -> {
                         Image(
                             painter = rememberAsyncImagePainter(item.thumbnail),
                             contentDescription = "Thumbnail",
@@ -168,59 +166,6 @@ fun SearchList(
                             fontSize = 12.sp
                         )
 
-
-                    }
-
-                    is SearchListItem.VideoItem -> {
-                        Image(
-                            painter = rememberAsyncImagePainter(item.thumbnail),
-                            contentDescription = "Thumbnail",
-                            modifier = Modifier
-                                .size(100.dp)
-                                .padding(16.dp)
-                                .aspectRatio(1f)
-                                .clip(
-                                    RoundedCornerShape(16.dp)
-                                )
-                        )
-
-                        Text(
-                            text = "video\n" + item.title.toString(),
-                            modifier = Modifier
-                                .padding(start = 16.dp)
-                                .weight(1f)  // 텍스트가 Switch와 겹치지 않도록
-                                .wrapContentHeight(),
-                            maxLines = 3,
-                            overflow = TextOverflow.Ellipsis,
-                            fontSize = 12.sp
-                        )
-                    }
-
-                    is SearchListItem.BookmarkItem -> {
-                        Image(
-                            painter = rememberAsyncImagePainter(item.thumbnail),
-                            contentDescription = "Thumbnail",
-                            modifier = Modifier
-                                .size(100.dp)
-                                .padding(16.dp)
-                                .aspectRatio(1f)
-                                .clip(
-                                    RoundedCornerShape(16.dp)
-                                )
-                        )
-
-                        Text(
-                            text = "video\n" + item.title.toString(),
-                            modifier = Modifier
-                                .padding(start = 16.dp)
-                                .weight(1f)  // 텍스트가 Switch와 겹치지 않도록
-                                .wrapContentHeight(),
-                            maxLines = 3,
-                            overflow = TextOverflow.Ellipsis,
-                            fontSize = 12.sp
-                        )
-                    }
-                }
 
                 Switch(
                     checked = checked,

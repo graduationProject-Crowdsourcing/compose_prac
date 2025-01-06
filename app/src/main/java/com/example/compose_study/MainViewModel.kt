@@ -5,11 +5,13 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.compose_study.domain.usecase.UseCaseFactory
 import com.example.compose_study.local.BookmarkDao
 import com.example.compose_study.local.BookmarkDatabase
 import com.example.compose_study.local.BookmarkEntity
 import com.example.compose_study.local.DatabaseProvider
 import com.example.compose_study.network.RetrofitClient
+import com.example.compose_study.ui.Search.SearchList
 import com.example.compose_study.ui.Search.SearchListItem
 import com.example.compose_study.ui.util.convertStringToDate
 import kotlinx.coroutines.flow.Flow
@@ -20,15 +22,17 @@ import java.util.Date
 import java.util.Locale
 import java.util.UUID
 
-class MainViewModel: ViewModel(){
+class MainViewModel : ViewModel() {
     private val _uiState = mutableStateOf<UiState>(UiState())
     val uiState: State<UiState> = _uiState
 
     private val searchService = RetrofitClient.searchService
 
-    private val bookmarkDao: BookmarkDao = DatabaseProvider.getDatabase(GlobalApplication.context).bookmarkDao()
+    private val bookmarkDao: BookmarkDao =
+        DatabaseProvider.getDatabase(GlobalApplication.context).bookmarkDao()
+    private val searchUseCase = UseCaseFactory.createSearchUseCase()
 
-    fun onSearch(query:String) = viewModelScope.launch{
+    fun onSearch(query: String) = viewModelScope.launch {
         runCatching {
             showLoading(true)
             val items = createItems(query)
@@ -42,46 +46,31 @@ class MainViewModel: ViewModel(){
         }
     }
 
-    private fun showLoading(isLoading: Boolean){
+    private fun showLoading(isLoading: Boolean) {
         _uiState.value = uiState.value.copy(isLoading = isLoading)
     }
 
-    private suspend fun createItems(query: String): List<SearchListItem>{
-        val imageItems = searchService.getSearchImage(query = query).documents.map {
-            SearchListItem.ImageItem(
-                id = UUID.randomUUID().toString(),
-                title = it.displaySitename,
-                thumbnail = it.thumbnailUrl,
-                date = it.datetime
-            )
-        }
-        val videoItems = searchService.getSearchVideo(query = query).documents.map {
-            SearchListItem.VideoItem(
-                id = UUID.randomUUID().toString(),
+    private suspend fun createItems(query: String): List<SearchListItem> =
+        searchUseCase.createListItem(query).map {
+            SearchListItem(
+                id = it.id,
                 title = it.title,
-                thumbnail = it.thumbnail,
-                date = it.datetime
+                date = it.date,
+                thumbnail = it.thumbnail
             )
         }
 
-        return arrayListOf<SearchListItem>().apply {
-            addAll(imageItems)
-            addAll(videoItems)
-        }.sortedByDescending {
-            it.date
-        }
-    }
 
-    fun setNickName(nickName: String){
+    fun setNickName(nickName: String) {
         _uiState.value = _uiState.value.copy(
             nickName = nickName
         )
     }
 
-    fun insertBookmark(bookmarkEntity: BookmarkEntity) = viewModelScope.launch{
+    fun insertBookmark(bookmarkEntity: BookmarkEntity) = viewModelScope.launch {
         try {
             bookmarkDao.insertBookmark(bookmarkEntity)
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
@@ -89,16 +78,22 @@ class MainViewModel: ViewModel(){
     fun deleteBookmark(bookmarkEntity: BookmarkEntity) = viewModelScope.launch {
         try {
             bookmarkDao.deleteBookmark(bookmarkEntity)
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    fun getBookmark(nickName: String) = viewModelScope.launch{
+    fun getBookmark(nickName: String) = viewModelScope.launch {
         bookmarkDao.getBookmarksByNickname(nickName).collect { bookmarkList ->
+            val updatedSearchList = _uiState.value.searchList.map { searchItem ->
+                val isBookmarked = bookmarkList.any { it.title == searchItem.title && it.thumbnail == searchItem.thumbnail }
+                searchItem.copy(bookmarked = isBookmarked)
+            }
+
             _uiState.value = _uiState.value.copy(
+                searchList = updatedSearchList,
                 bookmarkList = bookmarkList.map {
-                    SearchListItem.BookmarkItem(
+                    SearchListItem(
                         id = it.id,
                         title = it.title,
                         bookmarked = true,
@@ -109,7 +104,6 @@ class MainViewModel: ViewModel(){
             )
         }
     }
-
 
 
     data class UiState(
