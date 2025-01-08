@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.searchapp.data.BookmarkViewModel
-import com.example.searchapp.ui.login.KakaoLogin
 
 @Composable
 fun LoginScreen(

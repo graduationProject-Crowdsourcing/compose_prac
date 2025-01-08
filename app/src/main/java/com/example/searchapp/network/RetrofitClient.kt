@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 
 object RetrofitClient {
     private const val BASE_URL = "https://dapi.kakao.com/"
@@ -30,13 +31,29 @@ object RetrofitClient {
         }
         .build()
 
-    fun create() : SearchApiService {
-        val retrofit = Retrofit.Builder()
+
+    /* 기존 구조의 문제점 : return 으로 인해 계속 retrofit 인스턴스가 생성됨 */
+//    fun create() : SearchApiService {
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl(BASE_URL)
+//            .client(client)
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//
+//        return retrofit.create(SearchApiService::class.java)
+//    }
+
+    // 기존 계속해서 인스턴스가 생성되는 구조에서 Retrofit 인스턴스를 singleton으로 한번만 호출 ==> 이후 재사용
+    private val retrofit by lazy {
+        Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
 
-        return retrofit.create(SearchApiService::class.java)
+    // SearchApiService 인스턴스를 선언하여 singleton으로 단일 객체로 재사용
+    val searchApiService : SearchApiService by lazy {
+        retrofit.create(SearchApiService::class.java)
     }
 }

@@ -18,7 +18,7 @@ class SearchViewModel(
     private val _searchResults = MutableLiveData<UiState>()
     val searchResults: LiveData<UiState> get() = _searchResults
 
-    private val apiService = RetrofitClient.create()
+    private val apiService = RetrofitClient.searchApiService
 
     init {
         _searchResults.value = UiState()
