@@ -69,31 +69,4 @@ class BookmarkViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun toggleBookmark(item: SearchItem) {
-        currentUserId?.let { userId ->
-            viewModelScope.launch {
-                val bookmarkEntity = BookmarkEntity(
-                    id = item.id,
-                    title = item.title,
-                    thumbnail = when (item) {
-                        is SearchItem.ImageItem -> item.thumbnail
-                        is SearchItem.VideoItem -> item.thumbnail
-                    },
-                    date = item.date,
-                    isBookmarked = !item.bookmarked,
-                    userId = userId
-                )
-
-                if (item.bookmarked) {
-                    bookmarkDao.deleteBookmark(bookmarkEntity)
-                } else {
-                    bookmarkDao.insertBookmark(bookmarkEntity)
-                }
-
-                // 북마크 데이터를 다시 로드하여 UI에 반영
-                loadBookmarks()
-            }
-        }
-    }
-
 }

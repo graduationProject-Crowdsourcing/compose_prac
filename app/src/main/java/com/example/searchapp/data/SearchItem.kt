@@ -3,6 +3,8 @@ package com.example.searchapp.data
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
+// Parcelable은 SearchApp에서 activity간 데이터 전달을 위해 사용
+
 sealed interface SearchItem : Parcelable {
     val id: String
     val title: String?

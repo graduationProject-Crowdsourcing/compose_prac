@@ -3,6 +3,8 @@ package com.example.searchapp.data
 
 import com.google.gson.annotations.SerializedName
 
+// SerializedName => field 이름과 매핑하기 위해 사용, 여기서는 설정만 해두고 나중에 수정할지도?
+
 data class KakaoSearchResponse<T>(
     @SerializedName("documents") val documents: List<T>, // 제네릭
     @SerializedName("meta") val meta: Meta

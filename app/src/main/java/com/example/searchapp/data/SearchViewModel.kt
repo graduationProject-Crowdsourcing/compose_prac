@@ -81,6 +81,7 @@ class SearchViewModel(
                     Log.w("SearchViewModel", "동영상 검색 실패: ${videoResponse.code()} - ${videoResponse.message()}")
                 }
 
+                // 결과 보여주기 전에 bookmark 동기화
                 syncBookmarks(allResults)
 
                 // 결과 업데이트
@@ -99,13 +100,17 @@ class SearchViewModel(
         }
     }
 
+    // 특정 SearchItem 마다 bookmark 상태 변경 => UI와 DB에 동기화
     fun toggleBookmark(item: SearchItem) {
         viewModelScope.launch {
+
+            // bookmark 상태 반전
             val updatedItem = when (item) {
                 is SearchItem.ImageItem -> item.copy(bookmarked = !item.bookmarked)
                 is SearchItem.VideoItem -> item.copy(bookmarked = !item.bookmarked)
             }
 
+            // UI 반영
             val updatedList = _searchResults.value?.searchItem?.map {
                 if (it.id == updatedItem.id) updatedItem else it
             } ?: emptyList()
@@ -114,7 +119,7 @@ class SearchViewModel(
                 searchItem = updatedList
             )
 
-            // BookmarkViewModel을 통해 북마크 상태 관리
+            // BookmarkViewModel을 통해 북마크 db 상태 관리
             if (updatedItem.bookmarked) {
                 bookmarkViewModel.addBookmark(
                     BookmarkEntity(
@@ -145,7 +150,7 @@ class SearchViewModel(
         }
     }
 
-
+    // bookmark 동기화 => 검색 결과화면에서 북마크되어 있다면 북마크 활성화
     private fun syncBookmarks(results: MutableList<SearchItem>) {
         viewModelScope.launch {
             val bookmarkedIds = bookmarkViewModel.bookmarks.value?.map { it.id } ?: emptyList()

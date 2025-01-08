@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,6 +22,9 @@ fun LoginScreen(
     navigateToSearch : () -> Unit
 ){
     val context = LocalContext.current
+    val kakaoLoginManager = remember {
+        KakaoLoginManager(context)
+    }
 
     Column(
         modifier = Modifier
@@ -32,17 +36,20 @@ fun LoginScreen(
         Text(text = "로그인")
 
         Button(onClick = {
-            KakaoLogin(
-                context = context,
-                onSuccess = {  userId ->
+            kakaoLoginManager.kakaoLogin(
+                onSuccess = {
+                    userId ->
                     bookmarkViewModel.currentUserId = userId // 사용자 ID 설정
                     bookmarkViewModel.loadBookmarks() // 사용자 북마크 로드
                     Toast.makeText(context, "로그인 성공: $userId", Toast.LENGTH_SHORT).show()
                     navigateToSearch()
                 },
-                onFailure = { error ->
+                onFailure = {
+                    error ->
                     Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                })
+                }
+            )
+
         }) {
             Text(text = "카카오 로그인")
         }
