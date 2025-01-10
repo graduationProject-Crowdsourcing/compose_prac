@@ -10,7 +10,9 @@ import androidx.compose.ui.Modifier
 import com.example.searchapp.ui.Search.SearchApp
 import com.example.searchapp.ui.theme.SearchAppTheme
 import com.kakao.sdk.common.KakaoSdk
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

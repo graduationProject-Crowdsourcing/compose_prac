@@ -5,6 +5,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id ("kotlin-parcelize")
+    id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
 }
 
@@ -43,6 +44,12 @@ android {
             "String",
             "KAKAO_API_KEY",
             "\"${apikeysProperties.getProperty("KAKAO_API_KEY") ?: ""}\""
+        )
+
+        buildConfigField(
+            "String",
+            "KAKAO_NATIVE_API_KEY",
+            "\"${apikeysProperties.getProperty("KAKAO_NATIVE_API_KEY") ?: ""}\""
         )
 
     }
@@ -118,6 +125,13 @@ dependencies {
     // view pager (Accompanist pager)
     implementation("com.google.accompanist:accompanist-pager:0.32.0")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.32.0")
+
+    // hilt core
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
+
+    // hilt navigtion
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")

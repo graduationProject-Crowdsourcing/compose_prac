@@ -1,24 +1,31 @@
-package com.example.searchapp.data
+package com.example.searchapp.ui.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.searchapp.bookmark.BookmarkEntity
-import com.example.searchapp.network.RetrofitClient
+import com.example.searchapp.UserPreferences
+import com.example.searchapp.domain.model.BookmarkEntity
+import com.example.searchapp.domain.model.SearchItem
+import com.example.searchapp.domain.repository.BookmarkRepository
+import com.example.searchapp.domain.usecase.SearchUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.util.UUID
+import javax.inject.Inject
 
-
-class SearchViewModel(
-    private val bookmarkViewModel: BookmarkViewModel //의존성 추가
+@HiltViewModel
+class SearchViewModel @Inject constructor(
+    private val searchUseCase: SearchUseCase,
+    private val bookmarkRepository: BookmarkRepository,
+    private val userPreferences: UserPreferences
 ) : ViewModel() {
 
     private val _searchResults = MutableLiveData<UiState>()
     val searchResults: LiveData<UiState> get() = _searchResults
 
-    private val apiService = RetrofitClient.searchApiService
+//    private val apiService = RetrofitClient.searchApiService
+    val currentUserId: String? get() = userPreferences.userId.value
 
     init {
         _searchResults.value = UiState()
@@ -33,6 +40,17 @@ class SearchViewModel(
         Log.d("SearchViewModel", "로딩 상태 업데이트: ${_searchResults.value}")
 
         viewModelScope.launch {
+            try {
+                val results = searchUseCase.getResult(query)
+                syncBookmarks(results.toMutableList())
+                _searchResults.value = _searchResults.value?.copy(isLoading = false)
+            } catch (e : Exception){
+                Log.e("SearchViewModel", "API 호출 중 오류 발생: ${e.message}")
+            } finally {
+                _searchResults.value = _searchResults.value?.copy(isLoading = false)
+                Log.d("SearchViewModel", "로딩 상태 초기화: ${_searchResults.value}")
+            }
+            /*
             val allResults = mutableListOf<SearchItem>()
             try {
                 // 이미지 검색
@@ -97,6 +115,8 @@ class SearchViewModel(
                 _searchResults.value = _searchResults.value?.copy(isLoading = false)
                 Log.d("SearchViewModel", "로딩 상태 초기화: ${_searchResults.value}")
             }
+
+             */
         }
     }
 
@@ -121,7 +141,7 @@ class SearchViewModel(
 
             // BookmarkViewModel을 통해 북마크 db 상태 관리
             if (updatedItem.bookmarked) {
-                bookmarkViewModel.addBookmark(
+                bookmarkRepository.addBookmark(
                     BookmarkEntity(
                         id = updatedItem.id,
                         title = updatedItem.title,
@@ -130,11 +150,11 @@ class SearchViewModel(
                             is SearchItem.VideoItem -> updatedItem.thumbnail
                         },
                         date = updatedItem.date,
-                        userId = bookmarkViewModel.currentUserId.orEmpty()
+                        userId = currentUserId.orEmpty()
                     )
                 )
             } else {
-                bookmarkViewModel.removeBookmark(
+                bookmarkRepository.removeBookmark(
                     BookmarkEntity(
                         id = updatedItem.id,
                         title = updatedItem.title,
@@ -143,7 +163,7 @@ class SearchViewModel(
                             is SearchItem.VideoItem -> updatedItem.thumbnail
                         },
                         date = updatedItem.date,
-                        userId = bookmarkViewModel.currentUserId.orEmpty()
+                        userId = currentUserId.orEmpty()
                     )
                 )
             }
@@ -153,9 +173,8 @@ class SearchViewModel(
     // bookmark 동기화 => 검색 결과화면에서 북마크되어 있다면 북마크 활성화
     private fun syncBookmarks(results: MutableList<SearchItem>) {
         viewModelScope.launch {
-            val bookmarkedIds = bookmarkViewModel.bookmarks.value?.map { it.id } ?: emptyList()
             results.replaceAll { result ->
-                if (bookmarkedIds.contains(result.id)) {
+                if (currentUserId?.contains(result.id) == true) {
                     when (result) {
                         is SearchItem.ImageItem -> result.copy(bookmarked = true)
                         is SearchItem.VideoItem -> result.copy(bookmarked = true)

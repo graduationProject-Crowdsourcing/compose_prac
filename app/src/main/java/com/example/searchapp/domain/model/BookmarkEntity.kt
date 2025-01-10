@@ -1,4 +1,4 @@
-package com.example.searchapp.bookmark
+package com.example.searchapp.domain.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

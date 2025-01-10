@@ -2,23 +2,20 @@ package com.example.searchapp.ui.Search
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.searchapp.data.BookmarkViewModel
+import com.example.searchapp.ui.viewmodel.BookmarkViewModel
 import com.example.searchapp.ui.login.LoginScreen
-import com.example.searchapp.data.SearchViewModel
-import com.example.searchapp.data.SearchItem
-import com.example.searchapp.data.SearchViewModelFactory
+import com.example.searchapp.ui.viewmodel.SearchViewModel
+import com.example.searchapp.domain.model.SearchItem
 
 
 @Composable
 fun SearchApp(){
-    val bookmarkViewModel: BookmarkViewModel = viewModel()
-    val viewModel: SearchViewModel = viewModel(
-        factory = SearchViewModelFactory(bookmarkViewModel)
-    )
+    val bookmarkViewModel: BookmarkViewModel = hiltViewModel()
+    val viewModel: SearchViewModel = hiltViewModel()
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "login"){

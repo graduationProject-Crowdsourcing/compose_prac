@@ -1,9 +1,9 @@
-package com.example.searchapp.network
+package com.example.searchapp.data.service
 
 
-import com.example.searchapp.data.ImageResponse
-import com.example.searchapp.data.KakaoSearchResponse
-import com.example.searchapp.data.VideoResponse
+import com.example.searchapp.data.response.ImageResponse
+import com.example.searchapp.data.response.KakaoSearchResponse
+import com.example.searchapp.data.response.VideoResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

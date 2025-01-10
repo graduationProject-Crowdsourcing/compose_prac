@@ -1,4 +1,4 @@
-package com.example.searchapp.data
+package com.example.searchapp.data.response
 
 
 import com.google.gson.annotations.SerializedName

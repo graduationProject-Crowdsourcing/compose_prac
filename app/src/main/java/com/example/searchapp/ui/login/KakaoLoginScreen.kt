@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.searchapp.data.BookmarkViewModel
+import com.example.searchapp.ui.viewmodel.BookmarkViewModel
 
 @Composable
 fun LoginScreen(
@@ -38,8 +38,7 @@ fun LoginScreen(
             kakaoLoginManager.kakaoLogin(
                 onSuccess = {
                     userId ->
-                    bookmarkViewModel.currentUserId = userId // 사용자 ID 설정
-                    bookmarkViewModel.loadBookmarks() // 사용자 북마크 로드
+                    bookmarkViewModel.setUserId(userId) // 사용자 ID 설정
                     Toast.makeText(context, "로그인 성공: $userId", Toast.LENGTH_SHORT).show()
                     navigateToSearch()
                 },

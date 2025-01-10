@@ -1,4 +1,4 @@
-package com.example.searchapp.bookmark
+package com.example.searchapp.data.local
 
 import android.content.Context
 import androidx.room.Room

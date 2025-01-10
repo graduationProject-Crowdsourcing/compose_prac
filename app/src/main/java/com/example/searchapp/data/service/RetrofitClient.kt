@@ -1,13 +1,11 @@
-package com.example.searchapp.network
+package com.example.searchapp.data.service
 
-import android.os.Build
 import android.util.Log
 import com.example.searchapp.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 
 object RetrofitClient {
     private const val BASE_URL = "https://dapi.kakao.com/"

@@ -23,7 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.searchapp.data.SearchItem
+import com.example.searchapp.domain.model.SearchItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
