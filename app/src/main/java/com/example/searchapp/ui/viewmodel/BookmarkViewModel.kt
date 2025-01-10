@@ -1,6 +1,7 @@
 package com.example.searchapp.ui.viewmodel
 
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,11 +12,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.searchapp.UserPreferences
+import com.example.searchapp.data.repository.BookmarkRepositoryImpl
+import com.example.searchapp.domain.repository.BookmarkRepository
+import com.kakao.sdk.common.KakaoSdk.init
 
 
 // Room db 초기화를 위해 application의 context를 사용
 @HiltViewModel
 class BookmarkViewModel @Inject constructor(
+    private val repository: BookmarkRepository,
     private val bookmarkDao: BookmarkDao,
     private val userPreferences: UserPreferences
 ) : ViewModel() {
@@ -24,9 +29,8 @@ class BookmarkViewModel @Inject constructor(
 //    private val db = DatabaseProvider.getDatabase(application)
 //    private val bookmarkDao = db.bookmarkDao()
 
-    // view model 내부에서 data(bookmark list)를 저장하고 수정하는 객체, LiveData를 통해 선언했는데 mutableStateOf해도 같음
-    private val _bookmarks = MutableLiveData<List<BookmarkEntity>>()
-    val bookmarks : LiveData<List<BookmarkEntity>> get() = _bookmarks
+    private val _bookmarks = mutableStateOf<List<BookmarkEntity>>(emptyList())
+    val bookmarks: List<BookmarkEntity> get() = _bookmarks.value
 
     // 현재 로그인 된 사용자 ID 관리
 //    var currentUserId : String? get() = userPreferences.getUserId()
@@ -36,6 +40,12 @@ class BookmarkViewModel @Inject constructor(
             userId ->
             if (userId != null){
                 loadBookmarks(userId)
+            }
+        }
+        viewModelScope.launch {
+            // Repository 상태를 구독하여 ViewModel의 상태 업데이트
+            repository.bookmarks.collect { updatedBookmarks ->
+                _bookmarks.value = updatedBookmarks
             }
         }
     }
@@ -49,35 +59,44 @@ class BookmarkViewModel @Inject constructor(
     fun loadBookmarks(userId : String){
         try {
                 viewModelScope.launch {
-                    _bookmarks.value = bookmarkDao.getBookmarkByUser(userId = userId)
+                    repository.reloadBookmarks(userId)
                 }
         }
         catch (e:Exception){
             e.printStackTrace()
         }
     }
-    fun addBookmark(bookmark: BookmarkEntity) {
+//    fun addBookmark(bookmark: BookmarkEntity) {
+//        viewModelScope.launch {
+//            try {
+//                val userId = userPreferences.userId.value ?: return@launch
+//                bookmarkDao.insertBookmark(bookmark.copy(userId = userId))
+//                loadBookmarks(userId)  // 업데이트 작업 적용
+//            }
+//            catch (e:Exception){
+//                e.printStackTrace()
+//            }
+//        }
+//    }
+//
+//    fun removeBookmark(bookmark: BookmarkEntity) {
+//        viewModelScope.launch {
+//            try {
+//                val userId = userPreferences.userId.value ?: return@launch
+//                bookmarkDao.deleteBookmark(bookmark.copy(userId = userId))
+//                loadBookmarks(userId)  // 업데이트 작업 적용
+//            }
+//            catch (e:Exception){
+//                e.printStackTrace()
+//            }
+//        }
+//    }
+    fun toggleBookmark(bookmark: BookmarkEntity) {
         viewModelScope.launch {
-            try {
-                val userId = userPreferences.userId.value ?: return@launch
-                bookmarkDao.insertBookmark(bookmark.copy(userId = userId))
-                loadBookmarks(userId)  // 업데이트 작업 적용
-            }
-            catch (e:Exception){
-                e.printStackTrace()
-            }
-        }
-    }
-
-    fun removeBookmark(bookmark: BookmarkEntity) {
-        viewModelScope.launch {
-            try {
-                val userId = userPreferences.userId.value ?: return@launch
-                bookmarkDao.deleteBookmark(bookmark.copy(userId = userId))
-                loadBookmarks(userId)  // 업데이트 작업 적용
-            }
-            catch (e:Exception){
-                e.printStackTrace()
+            if (bookmarks.contains(bookmark)) {
+                repository.removeBookmark(bookmark)
+            } else {
+                repository.addBookmark(bookmark)
             }
         }
     }

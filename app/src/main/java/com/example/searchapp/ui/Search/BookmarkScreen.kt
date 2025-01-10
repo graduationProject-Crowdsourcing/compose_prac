@@ -36,7 +36,7 @@ fun BookmarkScreen(
     viewModel: BookmarkViewModel,
     onBackClick : () -> Unit
 ){
-    val bookmarks by viewModel.bookmarks.observeAsState(emptyList())
+    val bookmarks = viewModel.bookmarks
 
     if (bookmarks.isEmpty()){
         Text(
@@ -54,7 +54,7 @@ fun BookmarkScreen(
                 BookmarkItem(
                     bookmark = bookmark,
                     onToggleBookmark = {
-                        viewModel.removeBookmark(bookmark)
+                        viewModel.toggleBookmark(bookmark)
                     })
             }
         }
