@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.kakao.sdk.common.KakaoSdk
 
+
 class GlobalApplication: Application() {
     companion object {
         lateinit var instance: GlobalApplication

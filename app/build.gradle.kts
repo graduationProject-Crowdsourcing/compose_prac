@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.dagger.hilt)
     id("kotlin-kapt")
 }
 
@@ -53,6 +54,10 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    kapt {
+        correctErrorTypes = true
     }
 }
 
@@ -105,4 +110,8 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     kapt("androidx.room:room-compiler:2.6.1")
+
+    // Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 }
