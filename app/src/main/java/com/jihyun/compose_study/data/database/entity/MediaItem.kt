@@ -1,4 +1,4 @@
-package com.jihyun.compose_study.database.entity
+package com.jihyun.compose_study.data.database.entity
 
 // 이미지 데이터 클래스
 data class ImageItem(

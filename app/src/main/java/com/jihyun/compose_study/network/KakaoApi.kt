@@ -1,8 +1,8 @@
 package com.jihyun.compose_study.network
 
-import com.jihyun.compose_study.database.entity.ImageItem
-import com.jihyun.compose_study.database.entity.KakaoResponse
-import com.jihyun.compose_study.database.entity.VideoItem
+import com.jihyun.compose_study.data.database.entity.ImageItem
+import com.jihyun.compose_study.data.database.entity.KakaoResponse
+import com.jihyun.compose_study.data.database.entity.VideoItem
 import retrofit2.http.GET
 import retrofit2.http.Query
 

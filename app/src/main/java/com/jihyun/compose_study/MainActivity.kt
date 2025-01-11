@@ -20,12 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
-import com.jihyun.compose_study.database.DatabaseProvider
-import com.jihyun.compose_study.database.entity.Bookmark
-import com.jihyun.compose_study.ui.navigation.ViewPagerScreen
-import com.jihyun.compose_study.viewmodel.BookmarkViewModel
-import com.jihyun.compose_study.viewmodel.BookmarkViewModelFactory
-import com.jihyun.compose_study.viewmodel.MediaViewModel
+import com.jihyun.compose_study.data.database.DatabaseProvider
+import com.jihyun.compose_study.data.database.entity.Bookmark
+import com.jihyun.compose_study.presentation.ui.navigation.ViewPagerScreen
+import com.jihyun.compose_study.presentation.viewmodel.BookmarkViewModel
+import com.jihyun.compose_study.presentation.viewmodel.BookmarkViewModelFactory
+import com.jihyun.compose_study.presentation.viewmodel.MediaViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

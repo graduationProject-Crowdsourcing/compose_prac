@@ -1,4 +1,4 @@
-package com.jihyun.compose_study.ui.navigation
+package com.jihyun.compose_study.presentation.ui.navigation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
@@ -14,8 +14,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.jihyun.compose_study.BookmarkListScreen
 import com.jihyun.compose_study.MediaListScreen
-import com.jihyun.compose_study.viewmodel.BookmarkViewModel
-import com.jihyun.compose_study.viewmodel.MediaViewModel
+import com.jihyun.compose_study.presentation.viewmodel.BookmarkViewModel
+import com.jihyun.compose_study.presentation.viewmodel.MediaViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)

@@ -1,4 +1,4 @@
-package com.jihyun.compose_study.ui.theme
+package com.jihyun.compose_study.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

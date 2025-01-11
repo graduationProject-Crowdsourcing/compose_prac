@@ -1,10 +1,10 @@
-package com.jihyun.compose_study.viewmodel
+package com.jihyun.compose_study.presentation.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jihyun.compose_study.database.entity.ImageItem
-import com.jihyun.compose_study.database.entity.VideoItem
+import com.jihyun.compose_study.data.database.entity.ImageItem
+import com.jihyun.compose_study.data.database.entity.VideoItem
 import com.jihyun.compose_study.network.KakaoApi
 import com.jihyun.compose_study.network.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow

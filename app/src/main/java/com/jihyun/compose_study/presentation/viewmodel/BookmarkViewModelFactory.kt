@@ -1,8 +1,8 @@
-package com.jihyun.compose_study.viewmodel
+package com.jihyun.compose_study.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.jihyun.compose_study.database.dao.BookmarkDao
+import com.jihyun.compose_study.data.database.dao.BookmarkDao
 
 class BookmarkViewModelFactory(private val bookmarkDao: BookmarkDao) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

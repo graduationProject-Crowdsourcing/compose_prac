@@ -1,10 +1,10 @@
-package com.jihyun.compose_study.database.dao
+package com.jihyun.compose_study.data.database.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.jihyun.compose_study.database.entity.Bookmark
+import com.jihyun.compose_study.data.database.entity.Bookmark
 import kotlinx.coroutines.flow.Flow
 
 @Dao

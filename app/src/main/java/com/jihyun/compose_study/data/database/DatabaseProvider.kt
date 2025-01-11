@@ -1,4 +1,4 @@
-package com.jihyun.compose_study.database
+package com.jihyun.compose_study.data.database
 
 import android.content.Context
 import androidx.room.Room

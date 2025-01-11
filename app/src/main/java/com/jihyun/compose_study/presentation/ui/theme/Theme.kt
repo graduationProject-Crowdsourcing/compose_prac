@@ -1,4 +1,4 @@
-package com.jihyun.compose_study.ui.theme
+package com.jihyun.compose_study.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build
