@@ -14,7 +14,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.compose_study.ui.SearchApp
 import com.example.compose_study.ui.theme.Compose_studyTheme
 import com.kakao.sdk.common.util.Utility
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

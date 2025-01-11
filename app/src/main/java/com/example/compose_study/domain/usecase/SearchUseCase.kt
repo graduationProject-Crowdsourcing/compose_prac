@@ -2,10 +2,13 @@ package com.example.compose_study.domain.usecase
 
 import com.example.compose_study.domain.model.SearchListEntity
 import com.example.compose_study.domain.repository.SearchRepository
+import dagger.hilt.android.scopes.ViewModelScoped
 import java.util.Date
 import java.util.UUID
+import javax.inject.Inject
 
-class SearchUseCase(
+@ViewModelScoped
+class SearchUseCase @Inject constructor(
     private val searchRepository: SearchRepository
 ) {
     suspend fun createListItem(query: String): List<SearchListEntity>{

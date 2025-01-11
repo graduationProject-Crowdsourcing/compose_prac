@@ -248,8 +248,8 @@ fun SearchRow(viewModel:MainViewModel){
  }
 
 
-@Preview
-@Composable
-fun PreviewSearchApp() {
-    SearchListScreen(MainViewModel())
-}
+//@Preview
+//@Composable
+//fun PreviewSearchApp() {
+//    SearchListScreen(MainViewModel())
+//}

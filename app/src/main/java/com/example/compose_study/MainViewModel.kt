@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.compose_study.domain.usecase.SearchUseCase
 import com.example.compose_study.domain.usecase.UseCaseFactory
 import com.example.compose_study.local.BookmarkDao
 import com.example.compose_study.local.BookmarkDatabase
@@ -14,6 +15,7 @@ import com.example.compose_study.network.RetrofitClient
 import com.example.compose_study.ui.Search.SearchList
 import com.example.compose_study.ui.Search.SearchListItem
 import com.example.compose_study.ui.util.convertStringToDate
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -21,8 +23,12 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
+import javax.inject.Inject
 
-class MainViewModel : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val searchUseCase: SearchUseCase
+) : ViewModel() {
     private val _uiState = mutableStateOf<UiState>(UiState())
     val uiState: State<UiState> = _uiState
 
@@ -30,7 +36,6 @@ class MainViewModel : ViewModel() {
 
     private val bookmarkDao: BookmarkDao =
         DatabaseProvider.getDatabase(GlobalApplication.context).bookmarkDao()
-    private val searchUseCase = UseCaseFactory.createSearchUseCase()
 
     fun onSearch(query: String) = viewModelScope.launch {
         runCatching {

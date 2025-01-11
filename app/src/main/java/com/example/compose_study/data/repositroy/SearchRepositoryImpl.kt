@@ -4,8 +4,9 @@ import com.example.compose_study.data.service.SearchService
 import com.example.compose_study.domain.model.toImageEntity
 import com.example.compose_study.domain.model.toVideoEntity
 import com.example.compose_study.domain.repository.SearchRepository
+import javax.inject.Inject
 
-class SearchRepositoryImpl(
+class SearchRepositoryImpl @Inject constructor(
     private val searchService: SearchService
 ) : SearchRepository {
     override suspend fun getSearchImage(
