@@ -1,4 +1,10 @@
 package com.jihyun.compose_study.domain.usecase
 
-class AddBookmarkUseCase {
+import com.jihyun.compose_study.domain.model.Bookmark
+import com.jihyun.compose_study.domain.repository.BookmarkRepository
+
+class AddBookmarkUseCase(private val repository: BookmarkRepository) {
+    suspend operator fun invoke(bookmark: Bookmark) {
+        repository.addBookmark(bookmark)
+    }
 }
