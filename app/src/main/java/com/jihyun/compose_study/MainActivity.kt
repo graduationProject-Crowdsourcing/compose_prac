@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
 import com.jihyun.compose_study.data.database.DatabaseProvider
-import com.jihyun.compose_study.data.database.entity.Bookmark
+import com.jihyun.compose_study.data.database.entity.BookmarkEntity
 import com.jihyun.compose_study.presentation.ui.navigation.ViewPagerScreen
 import com.jihyun.compose_study.presentation.viewmodel.BookmarkViewModel
 import com.jihyun.compose_study.presentation.viewmodel.BookmarkViewModelFactory
@@ -80,7 +80,7 @@ fun MediaListScreen(mediaViewModel: MediaViewModel, bookmarkViewModel: BookmarkV
                             displaySite = item.display_sitename ?: "출처 없음",
                             onBookmarkClick = {
                                 bookmarkViewModel.addBookmark(
-                                    Bookmark(
+                                    BookmarkEntity(
                                         id = 0, // Auto-generated
                                         title = item.display_sitename ?: "제목 없음",
                                         url = item.thumbnail_url,
@@ -100,7 +100,7 @@ fun MediaListScreen(mediaViewModel: MediaViewModel, bookmarkViewModel: BookmarkV
                             videoTitle = item.title ?: item.author ?: "출처 없음",
                             onBookmarkClick = {
                                 bookmarkViewModel.addBookmark(
-                                    Bookmark(
+                                    BookmarkEntity(
                                         id = 0,
                                         title = item.title ?: "제목 없음",
                                         url = item.url ?: "",
