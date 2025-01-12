@@ -1,4 +1,8 @@
 package com.jihyun.compose_study.domain.model
 
-class BookmarkModel(id: Int, title: String, url: String, type: String) {
-}
+data class BookmarkModel(
+    val id: Int,
+    val title: String,
+    val url: String,
+    val type: String // IMAGE 또는 VIDEO
+)
