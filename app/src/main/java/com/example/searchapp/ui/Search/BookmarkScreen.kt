@@ -29,10 +29,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.searchapp.domain.model.BookmarkEntity
 import com.example.searchapp.ui.viewmodel.BookmarkViewModel
+import com.example.searchapp.ui.viewmodel.SearchViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookmarkScreen(
+//    searchViewModel: SearchViewModel,
     viewModel: BookmarkViewModel,
     onBackClick : () -> Unit
 ){
@@ -55,6 +57,7 @@ fun BookmarkScreen(
                     bookmark = bookmark,
                     onToggleBookmark = {
                         viewModel.toggleBookmark(bookmark)
+//                        searchViewModel.toggleBookmark()
                     })
             }
         }

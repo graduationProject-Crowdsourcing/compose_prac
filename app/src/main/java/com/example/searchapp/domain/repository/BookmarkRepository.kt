@@ -11,4 +11,5 @@ interface BookmarkRepository {
     suspend fun addBookmark(bookmark : BookmarkEntity)
     suspend fun removeBookmark(bookmark: BookmarkEntity)
     suspend fun reloadBookmarks(userId: String)
+    suspend fun toggleBookmark(bookmark: BookmarkEntity)
 }

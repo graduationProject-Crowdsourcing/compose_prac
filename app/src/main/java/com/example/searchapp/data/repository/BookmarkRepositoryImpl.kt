@@ -34,4 +34,13 @@ class BookmarkRepositoryImpl @Inject constructor(
         val updateBookmarks = dao.getBookmarkByUser(userId)
         _bookmarks.value = updateBookmarks
     }
+
+    override suspend fun toggleBookmark(bookmark: BookmarkEntity) {
+        val isBookmarked = _bookmarks.value.any { it.id == bookmark.id }
+        if (isBookmarked) {
+            dao.deleteBookmark(bookmark) // 존재하면 해제
+        } else {
+            dao.insertBookmark(bookmark) // 존재하지 않으면 추가
+        }
+    }
 }

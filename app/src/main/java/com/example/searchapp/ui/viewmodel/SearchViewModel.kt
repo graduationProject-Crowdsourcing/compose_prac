@@ -8,11 +8,15 @@ import androidx.lifecycle.viewModelScope
 import com.example.searchapp.UserPreferences
 import com.example.searchapp.domain.model.BookmarkEntity
 import com.example.searchapp.domain.model.SearchItem
+import com.example.searchapp.domain.model.toBookmarkEntity
+import com.example.searchapp.domain.model.toSearchItem
 import com.example.searchapp.domain.repository.BookmarkRepository
 import com.example.searchapp.domain.usecase.SearchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,7 +33,44 @@ class SearchViewModel @Inject constructor(
     val currentUserId: String? get() = userPreferences.userId.value
 
     init {
-        _searchResults.value = UiState()
+        viewModelScope.launch {
+            _searchResults.value = UiState() // 초기 상태 설정
+            bookmarkRepository.bookmarks.collect { bookmarks ->
+                val currentSearchItems = _searchResults.value?.searchItem ?: emptyList()
+
+                // 기존 검색 결과와 북마크 데이터 병합
+                val updatedSearchItems = currentSearchItems.map { item ->
+                    val isBookmarked = bookmarks.any { it.id == item.id && it.userId == currentUserId}
+                    when (item) {
+                        is SearchItem.ImageItem -> item.copy(bookmarked = isBookmarked)
+                        is SearchItem.VideoItem -> item.copy(bookmarked = isBookmarked)
+                    }
+                }
+
+                _searchResults.value = _searchResults.value?.copy(searchItem = updatedSearchItems)
+
+                // 전체 상태 업데이트
+//                _searchResults.value = _searchResults.value?.copy(
+//                    searchItem = updatedSearchItems,
+//                    bookmarkList = bookmarks.map { it.toSearchItem() } // 북마크 리스트 동기화
+//                )
+            }
+        }
+//        viewModelScope.launch {
+//            _searchResults.value = UiState()
+//            bookmarkRepository.bookmarks.collect { bookmarks ->
+//                val searchItems = withContext(Dispatchers.IO) {
+//                    currentUserId?.let { userId ->
+//                        bookmarkRepository.getBookmarksByUser(userId).map { it.toSearchItem() }
+//                    }
+//                } ?: emptyList()
+//
+//                // 검색 결과에 북마크 상태를 동기화
+//                _searchResults.value = _searchResults.value?.copy(
+//                    searchItem = searchItems
+//                )
+//            }
+//        }
         Log.d("SearchViewModel", "ViewModel 초기화됨: ${_searchResults.value}")
     }
 
@@ -123,6 +164,7 @@ class SearchViewModel @Inject constructor(
 
     // 특정 SearchItem 마다 bookmark 상태 변경 => UI와 DB에 동기화
     fun toggleBookmark(item: SearchItem) {
+
         viewModelScope.launch {
 
             // bookmark 상태 반전
@@ -140,70 +182,27 @@ class SearchViewModel @Inject constructor(
                 searchItem = updatedList
             )
 
-            val bookmarkEntity = BookmarkEntity(
-                id = updatedItem.id,
-                title = updatedItem.title,
-                thumbnail = when (updatedItem) {
-                    is SearchItem.ImageItem -> updatedItem.thumbnail
-                    is SearchItem.VideoItem -> updatedItem.thumbnail
-                },
-                date = updatedItem.date,
-                userId = currentUserId.orEmpty()
-            )
-
             if (updatedItem.bookmarked) {
-                bookmarkRepository.addBookmark(bookmarkEntity)
+                currentUserId?.let { updatedItem.toBookmarkEntity(it) }
+                    ?.let {
+                        bookmarkRepository.addBookmark(it)
+                        _searchResults.value?.searchItem?.let { it1 -> syncBookmarks(it1.toMutableList()) }
+                    }
+
             } else {
-                bookmarkRepository.removeBookmark(bookmarkEntity)
+                currentUserId?.let {
+                    updatedItem.toBookmarkEntity(it)
+                }?.let {
+                    bookmarkRepository.removeBookmark(it)
+                    _searchResults.value?.searchItem?.let { it1 -> syncBookmarks(it1.toMutableList()) }
+                }
             }
 
-            // BookmarkViewModel을 통해 북마크 db 상태 관리
-//            if (updatedItem.bookmarked) {
-//                bookmarkRepository.addBookmark(
-//                    BookmarkEntity(
-//                        id = updatedItem.id,
-//                        title = updatedItem.title,
-//                        thumbnail = when (updatedItem) {
-//                            is SearchItem.ImageItem -> updatedItem.thumbnail
-//                            is SearchItem.VideoItem -> updatedItem.thumbnail
-//                        },
-//                        date = updatedItem.date,
-//                        userId = currentUserId.orEmpty()
-//                    )
-//                )
-//            } else {
-//                bookmarkRepository.removeBookmark(
-//                    BookmarkEntity(
-//                        id = updatedItem.id,
-//                        title = updatedItem.title,
-//                        thumbnail = when (updatedItem) {
-//                            is SearchItem.ImageItem -> updatedItem.thumbnail
-//                            is SearchItem.VideoItem -> updatedItem.thumbnail
-//                        },
-//                        date = updatedItem.date,
-//                        userId = currentUserId.orEmpty()
-//                    )
-//                )
-//            }
         }
     }
 
     // bookmark 동기화 => 검색 결과화면에서 북마크되어 있다면 북마크 활성화
-//    private fun syncBookmarks(results: MutableList<SearchItem>) {
-//        viewModelScope.launch {
-//            results.replaceAll { result ->
-//                if (currentUserId?.contains(result.id) == true) {
-//                    when (result) {
-//                        is SearchItem.ImageItem -> result.copy(bookmarked = true)
-//                        is SearchItem.VideoItem -> result.copy(bookmarked = true)
-//                    }
-//                } else {
-//                    result
-//                }
-//            }
-//            _searchResults.value = _searchResults.value?.copy(searchItem = results)
-//        }
-//    }
+
     private fun syncBookmarks(results: MutableList<SearchItem>) {
         viewModelScope.launch {
             val bookmarks = bookmarkRepository.bookmarks.value // 최신 북마크 데이터를 가져옴
@@ -222,7 +221,7 @@ class SearchViewModel @Inject constructor(
             }
 
             // 변경된 결과를 UI 상태에 반영
-            _searchResults.value = _searchResults.value?.copy(searchItem = results)
+            _searchResults.value = _searchResults.value?.copy(searchItem = updatedResults)
         }
     }
 
@@ -231,7 +230,7 @@ class SearchViewModel @Inject constructor(
 
 data class UiState(
     val searchItem: List<SearchItem> = emptyList(),
-    val bookmarkList: List<SearchItem> = emptyList(),
+    val bookmarkList: List<BookmarkEntity> = emptyList(),
     val isLoading: Boolean = false
 )
 

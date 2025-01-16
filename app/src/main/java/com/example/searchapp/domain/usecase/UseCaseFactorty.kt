@@ -5,7 +5,6 @@ import com.example.searchapp.data.service.RetrofitClient
 
 object UseCaseFactorty{
 
-    fun createSearchUseCase(){
-        SearchUseCase(SearchRepositoryImpl(RetrofitClient.searchApiService))
-    }
+    fun createSearchUseCase() = SearchUseCase(SearchRepositoryImpl(RetrofitClient.searchApiService))
+
 }
