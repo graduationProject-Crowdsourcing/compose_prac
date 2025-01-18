@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.searchapp.ui.viewmodel.BookmarkViewModel
+import com.example.searchapp.ui.Search.pager.bookmark.BookmarkViewModel
 
 @Composable
 fun LoginScreen(

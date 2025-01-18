@@ -1,4 +1,4 @@
-package com.example.searchapp.ui.Search
+package com.example.searchapp.ui.Search.pager.bookmark
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,17 +19,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.searchapp.domain.model.BookmarkEntity
-import com.example.searchapp.ui.viewmodel.BookmarkViewModel
-import com.example.searchapp.ui.viewmodel.SearchViewModel
+import com.example.searchapp.data.local.BookmarkEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

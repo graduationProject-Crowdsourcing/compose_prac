@@ -1,4 +1,4 @@
-package com.example.searchapp.ui.Search
+package com.example.searchapp.ui.Search.pager
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,9 +26,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.searchapp.ui.viewmodel.BookmarkViewModel
+import com.example.searchapp.ui.Search.pager.bookmark.BookmarkViewModel
 import com.example.searchapp.domain.model.SearchItem
-import com.example.searchapp.ui.viewmodel.SearchViewModel
+import com.example.searchapp.ui.Search.pager.result.SearchResultScreen
+import com.example.searchapp.ui.Search.SearchViewModel
+import com.example.searchapp.ui.Search.pager.bookmark.BookmarkScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

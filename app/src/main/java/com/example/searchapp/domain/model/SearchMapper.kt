@@ -1,5 +1,7 @@
 package com.example.searchapp.domain.model
 
+import com.example.searchapp.data.local.BookmarkEntity
+
 
 fun SearchItem.toBookmarkEntity(userId: String): BookmarkEntity {
     return BookmarkEntity(

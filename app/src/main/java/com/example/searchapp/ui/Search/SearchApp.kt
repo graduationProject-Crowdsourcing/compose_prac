@@ -6,10 +6,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.searchapp.ui.viewmodel.BookmarkViewModel
+import com.example.searchapp.ui.Search.pager.bookmark.BookmarkViewModel
 import com.example.searchapp.ui.login.LoginScreen
-import com.example.searchapp.ui.viewmodel.SearchViewModel
 import com.example.searchapp.domain.model.SearchItem
+import com.example.searchapp.ui.Search.pager.result.ItemDetailScreen
+import com.example.searchapp.ui.Search.SearchScreen
+import com.example.searchapp.ui.Search.SearchViewModel
+import com.example.searchapp.ui.Search.pager.SearchPager
 
 
 @Composable

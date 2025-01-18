@@ -1,10 +1,8 @@
 package com.example.searchapp.data.repository
 
-import androidx.compose.runtime.mutableStateOf
-import com.example.searchapp.domain.model.BookmarkEntity
+import com.example.searchapp.data.local.BookmarkEntity
 import com.example.searchapp.domain.repository.BookmarkRepository
 import com.example.searchapp.data.local.BookmarkDao
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject

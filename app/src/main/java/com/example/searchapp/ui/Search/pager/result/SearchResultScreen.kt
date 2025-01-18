@@ -1,4 +1,4 @@
-package com.example.searchapp.ui.Search
+package com.example.searchapp.ui.Search.pager.result
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,10 +28,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.searchapp.ui.viewmodel.BookmarkViewModel
-import com.example.searchapp.ui.viewmodel.SearchViewModel
+import com.example.searchapp.ui.Search.pager.bookmark.BookmarkViewModel
 import com.example.searchapp.domain.model.SearchItem
-import com.example.searchapp.ui.viewmodel.UiState
+import com.example.searchapp.ui.Search.SearchViewModel
+import com.example.searchapp.ui.Search.UiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

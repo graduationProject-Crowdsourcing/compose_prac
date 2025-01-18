@@ -1,7 +1,6 @@
 package com.example.searchapp.domain.repository
 
-import com.example.searchapp.domain.model.BookmarkEntity
-import kotlinx.coroutines.flow.Flow
+import com.example.searchapp.data.local.BookmarkEntity
 import kotlinx.coroutines.flow.StateFlow
 
 interface BookmarkRepository {

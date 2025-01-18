@@ -1,4 +1,4 @@
-package com.example.searchapp.domain.model
+package com.example.searchapp.data.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

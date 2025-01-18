@@ -1,4 +1,4 @@
-package com.example.searchapp.ui.viewmodel
+package com.example.searchapp.ui.Search
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -6,17 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.searchapp.UserPreferences
-import com.example.searchapp.domain.model.BookmarkEntity
+import com.example.searchapp.data.local.BookmarkEntity
 import com.example.searchapp.domain.model.SearchItem
 import com.example.searchapp.domain.model.toBookmarkEntity
-import com.example.searchapp.domain.model.toSearchItem
 import com.example.searchapp.domain.repository.BookmarkRepository
 import com.example.searchapp.domain.usecase.SearchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel

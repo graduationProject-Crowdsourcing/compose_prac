@@ -1,4 +1,4 @@
-package com.example.searchapp.ui.Search
+package com.example.searchapp.ui.Search.pager.result
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

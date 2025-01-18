@@ -1,20 +1,16 @@
-package com.example.searchapp.ui.viewmodel
+package com.example.searchapp.ui.Search.pager.bookmark
 
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.searchapp.domain.model.BookmarkEntity
+import com.example.searchapp.data.local.BookmarkEntity
 import com.example.searchapp.data.local.BookmarkDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.searchapp.UserPreferences
-import com.example.searchapp.data.repository.BookmarkRepositoryImpl
 import com.example.searchapp.domain.repository.BookmarkRepository
-import com.kakao.sdk.common.KakaoSdk.init
 
 
 // Room db 초기화를 위해 application의 context를 사용
